@@ -1,0 +1,105 @@
+<html>
+<head>
+<title>MainActivity.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6897bb;}
+.s3 { color: #6a8759;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+MainActivity.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.labexam</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">androidx.annotation.Nullable</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.appcompat.app.AppCompatActivity</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">android.content.Intent</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.graphics.Bitmap</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.net.Uri</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.os.Bundle</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.provider.MediaStore</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.view.View</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.EditText</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.ImageView</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.Toast</span><span class="s0">;</span>
+
+<span class="s0">public class </span><span class="s1">MainActivity </span><span class="s0">extends </span><span class="s1">AppCompatActivity {</span>
+    <span class="s0">private </span><span class="s1">ImageView imageObject</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">EditText imageDetailET</span><span class="s0">;</span>
+    <span class="s0">private static final int </span><span class="s1">PICK_IMAGE_REQUEST = </span><span class="s2">100</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">Uri imageFilePath</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">Bitmap imageToStore</span><span class="s0">;</span>
+    <span class="s1">databaseHandler objectdatabaseHandler</span><span class="s0">;</span>
+
+
+    <span class="s1">@Override</span>
+    <span class="s0">protected void </span><span class="s1">onCreate(Bundle savedInstanceState) {</span>
+        <span class="s0">super</span><span class="s1">.onCreate(savedInstanceState)</span><span class="s0">;</span>
+        <span class="s1">setContentView(R.layout.activity_main)</span><span class="s0">;</span>
+
+        <span class="s0">try </span><span class="s1">{</span>
+            <span class="s1">imageDetailET = findViewById(R.id.imagenameET)</span><span class="s0">;</span>
+            <span class="s1">imageObject = findViewById(R.id.image)</span><span class="s0">;</span>
+            <span class="s1">objectdatabaseHandler = </span><span class="s0">new </span><span class="s1">databaseHandler(</span><span class="s0">this</span><span class="s1">)</span><span class="s0">;</span>
+
+        <span class="s1">} </span><span class="s0">catch </span><span class="s1">(Exception e) {</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">chooseImage(View objectView) {</span>
+        <span class="s0">try </span><span class="s1">{</span>
+            <span class="s1">Intent objectIntent = </span><span class="s0">new </span><span class="s1">Intent()</span><span class="s0">;</span>
+            <span class="s1">objectIntent.setType(</span><span class="s3">&quot;image/*&quot;</span><span class="s1">)</span><span class="s0">;</span>
+
+            <span class="s1">objectIntent.setAction(Intent.ACTION_GET_CONTENT)</span><span class="s0">;</span>
+            <span class="s1">startActivityForResult(objectIntent</span><span class="s0">, </span><span class="s1">PICK_IMAGE_REQUEST)</span><span class="s0">;</span>
+        <span class="s1">} </span><span class="s0">catch </span><span class="s1">(Exception e) {</span>
+            <span class="s1">Toast.makeText(</span><span class="s0">this, </span><span class="s1">e.getMessage()</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">protected void </span><span class="s1">onActivityResult(</span><span class="s0">int </span><span class="s1">requestCode</span><span class="s0">, int </span><span class="s1">resultCode</span><span class="s0">, </span><span class="s1">@Nullable Intent data) {</span>
+        <span class="s0">try </span><span class="s1">{</span>
+            <span class="s0">super</span><span class="s1">.onActivityResult(requestCode</span><span class="s0">, </span><span class="s1">resultCode</span><span class="s0">, </span><span class="s1">data)</span><span class="s0">;</span>
+            <span class="s0">if </span><span class="s1">(requestCode == PICK_IMAGE_REQUEST &amp;&amp; resultCode == RESULT_OK &amp;&amp; data != </span><span class="s0">null </span><span class="s1">&amp;&amp; data.getData() != </span><span class="s0">null</span><span class="s1">) {</span>
+                <span class="s1">imageFilePath = data.getData()</span><span class="s0">;</span>
+                <span class="s1">imageToStore = MediaStore.Images.Media.getBitmap(getContentResolver()</span><span class="s0">, </span><span class="s1">imageFilePath)</span><span class="s0">;</span>
+
+                <span class="s1">imageObject.setImageBitmap(imageToStore)</span><span class="s0">;</span>
+
+            <span class="s1">}</span>
+        <span class="s1">} </span><span class="s0">catch </span><span class="s1">(Exception e) {</span>
+            <span class="s1">Toast.makeText(</span><span class="s0">this, </span><span class="s1">e.getMessage()</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+
+    <span class="s0">public void </span><span class="s1">storeImage(View view) {</span>
+        <span class="s0">try </span><span class="s1">{</span>
+            <span class="s0">if</span><span class="s1">(!imageDetailET.getText().toString().isEmpty() &amp;&amp; imageObject.getDrawable()!=</span><span class="s0">null </span><span class="s1">&amp;&amp; imageToStore!=</span><span class="s0">null</span><span class="s1">){</span>
+                <span class="s1">objectdatabaseHandler.storeImage(</span><span class="s0">new </span><span class="s1">model(imageDetailET.getText().toString()</span><span class="s0">,</span><span class="s1">imageToStore))</span><span class="s0">;</span>
+            <span class="s1">}</span>
+            <span class="s0">else</span><span class="s1">{</span>
+                <span class="s1">Toast.makeText(</span><span class="s0">this, </span><span class="s3">&quot;Select Image and Name &quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+
+        <span class="s1">}</span><span class="s0">catch </span><span class="s1">(Exception e){</span>
+            <span class="s1">Toast.makeText(</span><span class="s0">this, </span><span class="s1">e.getMessage().toString()</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+    <span class="s0">public void </span><span class="s1">moveToShowActivity(View view)</span>
+    <span class="s1">{</span>
+         <span class="s1">startActivity(</span><span class="s0">new </span><span class="s1">Intent(</span><span class="s0">this, </span><span class="s1">showActivity.</span><span class="s0">class</span><span class="s1">))</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+<span class="s1">}</span></pre>
+</body>
+</html>

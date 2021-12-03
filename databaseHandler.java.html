@@ -1,0 +1,130 @@
+<html>
+<head>
+<title>databaseHandler.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6a8759;}
+.s3 { color: #6897bb;}
+.s4 { color: #808080;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+databaseHandler.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.labexam</span><span class="s0">;</span>
+
+
+<span class="s0">import </span><span class="s1">android.content.ContentValues</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.content.Context</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.database.Cursor</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.database.sqlite.SQLiteDatabase</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.database.sqlite.SQLiteOpenHelper</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.graphics.Bitmap</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.graphics.BitmapFactory</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.Toast</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">androidx.annotation.Nullable</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">java.io.ByteArrayInputStream</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.io.ByteArrayOutputStream</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.util.ArrayList</span><span class="s0">;</span>
+
+<span class="s0">public class </span><span class="s1">databaseHandler </span><span class="s0">extends </span><span class="s1">SQLiteOpenHelper {</span>
+    <span class="s1">Context context</span><span class="s0">;</span>
+    <span class="s0">private static </span><span class="s1">String DATABASE_NAME = </span><span class="s2">&quot;mydb.db&quot;</span><span class="s0">;</span>
+
+    <span class="s0">private static int </span><span class="s1">DATABASE_VERSION = </span><span class="s3">1</span><span class="s0">;</span>
+    <span class="s0">private static </span><span class="s1">String createTableQuery = </span><span class="s2">&quot;create table imageInfo (imageName TEXT&quot; </span><span class="s1">+ </span><span class="s2">&quot;,image BLOB)&quot;</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">ByteArrayOutputStream objectByteOutputStream</span><span class="s0">;</span>
+    <span class="s0">private byte</span><span class="s1">[] imageInBytes</span><span class="s0">;</span>
+    <span class="s1">String nameOfImage</span><span class="s0">;</span>
+
+
+    <span class="s0">public </span><span class="s1">databaseHandler(Context context) {</span>
+        <span class="s0">super</span><span class="s1">(context</span><span class="s0">, </span><span class="s1">DATABASE_NAME</span><span class="s0">, null, </span><span class="s1">DATABASE_VERSION)</span><span class="s0">;</span>
+        <span class="s0">this</span><span class="s1">.context = context</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public void </span><span class="s1">onCreate(SQLiteDatabase db) {</span>
+        <span class="s0">try </span><span class="s1">{</span>
+            <span class="s1">db.execSQL(createTableQuery)</span><span class="s0">;</span>
+            <span class="s1">Toast.makeText(context</span><span class="s0">, </span><span class="s2">&quot;Table Created Successfully&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+
+        <span class="s1">} </span><span class="s0">catch </span><span class="s1">(Exception e) {</span>
+            <span class="s1">Toast.makeText(context</span><span class="s0">, </span><span class="s1">e.getMessage().toString()</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public void </span><span class="s1">onUpgrade(SQLiteDatabase db</span><span class="s0">, int </span><span class="s1">oldVersion</span><span class="s0">, int </span><span class="s1">newVersion) {</span>
+
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">storeImage(model objectmodel) {</span>
+        <span class="s0">try </span><span class="s1">{</span>
+            <span class="s1">SQLiteDatabase objectSqLiteDatabase = </span><span class="s0">this</span><span class="s1">.getWritableDatabase()</span><span class="s0">;</span>
+            <span class="s1">Bitmap imageToStoreBitmap = objectmodel.getImage()</span><span class="s0">;</span>
+            <span class="s1">objectByteOutputStream = </span><span class="s0">new </span><span class="s1">ByteArrayOutputStream()</span><span class="s0">;</span>
+            <span class="s1">imageToStoreBitmap.compress(Bitmap.CompressFormat.JPEG</span><span class="s0">, </span><span class="s3">100</span><span class="s0">, </span><span class="s1">objectByteOutputStream)</span><span class="s0">;</span>
+
+            <span class="s1">imageInBytes = objectByteOutputStream.toByteArray()</span><span class="s0">;</span>
+            <span class="s1">ContentValues objectContentValues = </span><span class="s0">new </span><span class="s1">ContentValues()</span><span class="s0">;</span>
+            <span class="s1">objectContentValues.put(</span><span class="s2">&quot;imageName&quot;</span><span class="s0">, </span><span class="s1">objectmodel.getImageName())</span><span class="s0">;</span>
+            <span class="s1">objectContentValues.put(</span><span class="s2">&quot;image&quot;</span><span class="s0">, </span><span class="s1">imageInBytes)</span><span class="s0">;</span>
+            <span class="s0">long </span><span class="s1">checkIfQueryRuns = objectSqLiteDatabase.insert(</span><span class="s2">&quot;imageInfo&quot;</span><span class="s0">, null, </span><span class="s1">objectContentValues)</span><span class="s0">;</span>
+            <span class="s0">if </span><span class="s1">(checkIfQueryRuns != -</span><span class="s3">1</span><span class="s1">) {</span>
+                <span class="s1">Toast.makeText(context</span><span class="s0">, </span><span class="s2">&quot;DATA Added&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                <span class="s1">objectSqLiteDatabase.close()</span><span class="s0">;</span>
+            <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                <span class="s1">Toast.makeText(context</span><span class="s0">, </span><span class="s2">&quot;Failed to add data&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">} </span><span class="s0">catch </span><span class="s1">(Exception e) {</span>
+            <span class="s1">Toast.makeText(context</span><span class="s0">, </span><span class="s1">e.getMessage().toString()</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public </span><span class="s1">ArrayList&lt;model&gt; getAllImageData()</span>
+    <span class="s1">{</span>
+        <span class="s0">try</span>
+        <span class="s1">{</span>
+            <span class="s1">SQLiteDatabase objectSQLiteDatabase = </span><span class="s0">this</span><span class="s1">.getReadableDatabase()</span><span class="s0">;</span>
+            <span class="s1">ArrayList&lt;model&gt; objectmodelList = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;()</span><span class="s0">;</span>
+
+            <span class="s1">Cursor objectCursor = objectSQLiteDatabase.rawQuery(</span><span class="s2">&quot;select * from imageInfo&quot;</span><span class="s0">,null</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s0">if </span><span class="s1">(objectCursor.getCount() != </span><span class="s3">0</span><span class="s1">)</span>
+            <span class="s1">{</span>
+                <span class="s0">while </span><span class="s1">(objectCursor.moveToNext())</span>
+                    <span class="s1">nameOfImage = objectCursor.getString(</span><span class="s3">0</span><span class="s1">)</span><span class="s0">;</span>
+
+
+                <span class="s0">byte </span><span class="s1">[] imageBytes = objectCursor.getBlob(</span><span class="s3">1</span><span class="s1">)</span><span class="s0">;</span>
+
+                <span class="s1">Bitmap objectBitmap = BitmapFactory.decodeByteArray(imageBytes</span><span class="s0">, </span><span class="s3">1</span><span class="s0">, </span><span class="s1">imageBytes.length)</span><span class="s0">;</span>
+
+
+<span class="s4">//                       // objectmodelList.add(new ModelClas(nameOfImage, objectBitmap));</span>
+                <span class="s1">objectmodelList.add(</span><span class="s0">new </span><span class="s1">model(nameOfImage</span><span class="s0">,</span><span class="s1">objectBitmap))</span><span class="s0">;</span>
+                <span class="s0">return </span><span class="s1">objectmodelList</span><span class="s0">;</span>
+            <span class="s1">}</span>
+            <span class="s0">else</span>
+            <span class="s1">{</span>
+                <span class="s1">Toast.makeText(context</span><span class="s0">, </span><span class="s2">&quot;No Value exists&quot;</span><span class="s0">,</span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                <span class="s0">return null;</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s0">catch </span><span class="s1">(Exception e)</span>
+        <span class="s1">{</span>
+            <span class="s1">Toast.makeText(context</span><span class="s0">, </span><span class="s1">e.getMessage()</span><span class="s0">,</span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+            <span class="s0">return null;</span>
+        <span class="s1">}</span>
+
+    <span class="s1">}</span>
+<span class="s1">}</span></pre>
+</body>
+</html>
